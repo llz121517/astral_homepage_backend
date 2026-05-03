@@ -1,4 +1,4 @@
-# run.py
+# /run.py
 import uvicorn
 from app.main import app
 from app.core.config import (

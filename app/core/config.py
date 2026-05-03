@@ -1,3 +1,6 @@
+# app/core/config.py
+
+
 # 服务启动配置
 SERVER_HOST = "0.0.0.0"
 SERVER_PORT = 8000
