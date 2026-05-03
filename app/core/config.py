@@ -1,0 +1,6 @@
+# 服务启动配置
+SERVER_HOST = "0.0.0.0"
+SERVER_PORT = 8000
+RELOAD = True
+WORKERS = 1 if RELOAD else 4
+LOG_LEVEL = "debug"
