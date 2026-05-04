@@ -1,6 +1,2 @@
-fastapi
-uvicorn
-sqlalchemy
-python-dotenv  # 用于加载 .env
-markdown       # 用于解析主页 Markdown
-python-multipart  # 若登录用 form 表单
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0

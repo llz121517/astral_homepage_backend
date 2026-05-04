@@ -1,5 +1,7 @@
 # app/main.py
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 
 app = FastAPI(
@@ -9,6 +11,10 @@ app = FastAPI(
 )
 
 
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+
+
 @app.get("/")
-async def root():
-    return {"message": "Hello from Astral's backend!"}
+async def serve_frontend():
+    # 返回前端入口页面
+    return FileResponse("frontend/index.html")
