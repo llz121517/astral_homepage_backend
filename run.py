@@ -1,4 +1,6 @@
+#!/usr/bin/env python
 # /run.py
+import os
 import uvicorn
 from app.config import (
     SERVER_HOST,
@@ -9,6 +11,19 @@ from app.config import (
 )
 
 if __name__ == "__main__":
+    cmd = ("uvicorn app.main:app"
+           f" --host {SERVER_HOST}"
+           f" --port {SERVER_PORT}"
+           f" --workers {WORKERS}"
+           f" --log-level {LOG_LEVEL}"
+    )
+
+    if RELOAD:
+        cmd += " --reload"
+        cmd += " --reload-dir ."
+
+    os.system(cmd)
+    """
     uvicorn.run(
         app="app.main:app",
         host=SERVER_HOST,
@@ -17,3 +32,4 @@ if __name__ == "__main__":
         workers=WORKERS,
         log_level=LOG_LEVEL
     )
+    """
