@@ -20,7 +20,8 @@ if __name__ == "__main__":
 
     if RELOAD:
         cmd += " --reload"
-        cmd += " --reload-dir ."
+        cmd += " --reload-dir app --reload-dir frontend"
+        cmd += " --reload-delay 0"
 
     os.system(cmd)
     """

@@ -1,2 +1,5 @@
 /.venv/
 /.env
+/.idea/
+/status_test_server.py
+/data/site.json
