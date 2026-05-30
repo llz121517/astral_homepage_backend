@@ -7,10 +7,12 @@ from app.config import (
     SERVER_PORT,
     RELOAD,
     WORKERS,
-    LOG_LEVEL
+    LOG_LEVEL,
+    RELOAD_DIR
 )
 
 if __name__ == "__main__":
+    """
     cmd = ("uvicorn app.main:app"
            f" --host {SERVER_HOST}"
            f" --port {SERVER_PORT}"
@@ -31,6 +33,6 @@ if __name__ == "__main__":
         port=SERVER_PORT,
         reload=RELOAD,
         workers=WORKERS,
-        log_level=LOG_LEVEL
+        log_level=LOG_LEVEL,
+        reload_dirs=RELOAD_DIR
     )
-    """

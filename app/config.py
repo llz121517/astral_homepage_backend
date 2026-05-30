@@ -21,6 +21,7 @@ SERVER_PORT = 8000
 RELOAD = True
 WORKERS = 1 if RELOAD else 4
 LOG_LEVEL = "debug"
+RELOAD_DIR = ["app", "frontend"]
 
 
 # FastAPI 基础配置
