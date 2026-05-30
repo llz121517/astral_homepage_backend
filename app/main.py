@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.site import create_site_info
 from app.config import (
     ALLOW_ORIGINS,
     ALLOW_CREDENTIALS,
@@ -38,9 +39,13 @@ app.add_middleware(
     allow_headers=ALLOW_HEADERS,
 )
 
+# 初始化/创建站点信息文件
+create_site_info()
 
+# 挂载静态文件
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 
+# 挂载 API 端点
 app.include_router(report_router)
 app.include_router(device_status_router)
 app.include_router(site_info_router)

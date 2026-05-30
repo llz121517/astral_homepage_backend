@@ -27,7 +27,6 @@ LOG_LEVEL = "debug"
 TITLE = "Astral's Homepage"
 VERSION = "0.1.0"
 DESCRIPTION = "A simple personal homepage backend."
-
 # 文档开关
 DEBUG = True
 # None 为关闭文档页
@@ -41,9 +40,7 @@ OPENAPI_URL = "/openapi.json"
 ALLOW_ORIGINS = [
     "http://localhost:8000",
 ]
-
-
-# 通用配置
+# 通用配置 (app.add_middleware)
 ALLOW_CREDENTIALS = True
 ALLOW_METHODS = ["*"]
 ALLOW_HEADERS = ["*"]
@@ -54,4 +51,8 @@ SESSION_COOKIE_KEY = "session_id"
 SESSION_MAX_AGE = 7 * 24 * 60 * 60  # /天
 SESSION_HTTPONLY = True
 SESSION_SAMESITE = "lax"   # 允许部分第三方请求携带 Cookie
-SESSION_SECURE = False     # 启用HTTPS
+SESSION_SECURE = False     # 启用HTTPS  生产环境需设置为 True
+
+
+# 设备状态过滤配置
+DEFAULT_DESCRIPTION = "未知应用程序"

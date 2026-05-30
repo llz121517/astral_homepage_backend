@@ -7,19 +7,23 @@ from pathlib import Path
 DATA_DIR = Path(__file__).parent.parent.parent / "data"
 DATA_FILE = DATA_DIR / "site.json"
 
-# 确保目录存在
-os.makedirs(DATA_DIR, exist_ok=True)
+def create_site_info():
+    """
+    创建站点信息文件
+    """
+    # 确保目录存在
+    os.makedirs(DATA_DIR, exist_ok=True)
 
-# 不存在则创建默认配置
-if not DATA_FILE.exists():
-    default_data = {
-        "site_title": "Astral",
-        "name": "example",
-        "bio": "This is my personal homepage.",
-        "avatar_url": "/static/user/default-avatar.webp"
-    }
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(default_data, f, indent=2, ensure_ascii=False)
+    # 不存在则创建默认配置
+    if not DATA_FILE.exists():
+        default_data = {
+            "site_title": "Astral",
+            "name": "example",
+            "bio": "This is my personal homepage.",
+            "avatar_url": "/static/user/default-avatar.webp"
+        }
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(default_data, f, indent=2, ensure_ascii=False)
 
 def get_site_info():
     """

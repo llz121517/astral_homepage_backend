@@ -1,42 +1,13 @@
 # app/api/v1/report.py
-import os
-import json
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import JSONResponse
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
-import base64
-from app.config import ASTRAL_AES_KEY
 from app.core.crypto import decrypt_aes_cbc_payload
 
 # 从 state 导入最近设备状态字典
 from app.core.state import latest_device_status
 
 router = APIRouter(prefix="/api/v1", tags=["report", "status"])
-""" 已迁移至core
-def decrypt_payload(encrypted_b64: str) -> dict:
-    try:
-        key_b64 = ASTRAL_AES_KEY
-        if not key_b64:
-            raise ValueError("环境变量 ASTRAL_AES_KEY 未设置")
 
-        key = base64.b64decode(key_b64)
-        if len(key) not in (16, 24, 32):  # 支持 AES-128/192/256
-            raise ValueError("ASTRAL_AES_KEY 必须是 16/24/32 字节的 Base64 密钥（对应 AES-128/192/256）")
-
-        encrypted = base64.b64decode(encrypted_b64)
-        if len(encrypted) < 16:
-            raise ValueError("加密数据太短（缺少 IV）")
-
-        iv = encrypted[:16]
-        ciphertext = encrypted[16:]
-
-        cipher = AES.new(key, AES.MODE_CBC, iv)
-        plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size).decode('utf-8')
-        return json.loads(plaintext)
-
-    except Exception as e:
-        raise ValueError(f"解密失败: {e}")"""
 
 @router.post("/report")
 async def receive_status_report(request: Request):
