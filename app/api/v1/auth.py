@@ -24,7 +24,6 @@ async def login(
     response: Response,
     password: str = Form(...)
 ):
-    # 你只需要密码登录（个人站足够）
     if password != ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="密码错误")
 

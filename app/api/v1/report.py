@@ -7,12 +7,13 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 import base64
 from app.config import ASTRAL_AES_KEY
+from app.core.crypto import decrypt_aes_cbc_payload
 
 # 从 state 导入最近设备状态字典
 from app.core.state import latest_device_status
 
 router = APIRouter(prefix="/api/v1", tags=["report", "status"])
-
+""" 已迁移至core
 def decrypt_payload(encrypted_b64: str) -> dict:
     try:
         key_b64 = ASTRAL_AES_KEY
@@ -35,7 +36,7 @@ def decrypt_payload(encrypted_b64: str) -> dict:
         return json.loads(plaintext)
 
     except Exception as e:
-        raise ValueError(f"解密失败: {e}")
+        raise ValueError(f"解密失败: {e}")"""
 
 @router.post("/report")
 async def receive_status_report(request: Request):
@@ -45,7 +46,7 @@ async def receive_status_report(request: Request):
         if not encrypted_b64:
             raise HTTPException(status_code=400, detail="空请求体")
 
-        data = decrypt_payload(encrypted_b64)
+        data = decrypt_aes_cbc_payload(encrypted_b64)
 
         # 更新到变量
         latest_device_status.clear()
