@@ -26,13 +26,12 @@ MAPPING_RULES = [
         },
         "description": "任务栏"
     },
-    # 浏览器通用规则
     {
         "conditions": {
             "windowClass": "Chrome_WidgetWin_1",
-            "processRealName": {"in": ["msedge.exe", "chrome.exe"]}
+            "description": "Microsoft Edge"
         },
-        "description": "浏览器"
+        "description": "Microsoft Edge"
     },
     # 可继续添加更多规则...
 ]
