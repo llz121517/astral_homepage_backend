@@ -11,7 +11,7 @@ async def admin_jump(request: Request):
 
 async def login_jump(request: Request):
     session_id = request.cookies.get("session_id")
-    if session_id or verify_session(session_id):
+    if session_id and verify_session(session_id):
         return RedirectResponse(url="/admin", status_code=302)
 
 # 供受保护接口使用的依赖
