@@ -1,9 +1,10 @@
 # app/main.py
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Depends, Request
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.site import create_site_info
+from app.core.auth import admin_jump, login_jump
 from app.config import (
     ALLOW_ORIGINS,
     ALLOW_CREDENTIALS,
@@ -53,6 +54,25 @@ app.include_router(auth_router)
 
 
 @app.get("/")
-async def serve_frontend():
+async def index_page():
     # 返回前端入口页面
     return FileResponse("frontend/index.html")
+
+@app.get("/admin")
+async def admin_page(
+    request: Request,
+    redirect_resp: RedirectResponse = Depends(admin_jump)
+):
+    if redirect_resp:
+        return redirect_resp
+    # 返回管理页面
+    return FileResponse("frontend/admin/index.html")
+
+@app.get("/login")
+async def login_page(request: Request,
+    redirect_resp: RedirectResponse = Depends(login_jump)
+):
+    if redirect_resp:
+        return redirect_resp
+    # 登录页面
+    return FileResponse("frontend/admin/login.html")
