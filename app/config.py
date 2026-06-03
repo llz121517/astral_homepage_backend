@@ -6,11 +6,14 @@ load_dotenv()
 
 # .env 环境变量
 ASTRAL_AES_KEY = os.getenv("ASTRAL_AES_KEY")
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 # 启动时验证必要的环境变量
 if not ASTRAL_AES_KEY:
     raise RuntimeError("环境变量 ASTRAL_AES_KEY 未设置，请在 .env 文件中配置")
+if not ADMIN_USERNAME:
+    raise RuntimeError("环境变量 ADMIN_USERNAME 未设置，请在 .env 文件中配置")
 if not ADMIN_PASSWORD:
     raise RuntimeError("环境变量 ADMIN_PASSWORD 未设置，请在 .env 文件中配置")
 
