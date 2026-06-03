@@ -16,6 +16,7 @@ from app.config import (
 from app.api.v1.report import router as report_router
 from app.api.v1.status.device import router as device_status_router
 from app.api.v1.site.info import router as site_info_router
+from app.core.db import init_db
 from app.api.v1.auth import router as auth_router
 from app.config import (
     TITLE, VERSION, DESCRIPTION,
@@ -40,8 +41,9 @@ app.add_middleware(
     allow_headers=ALLOW_HEADERS,
 )
 
-# 初始化/创建站点信息文件
+# 初始化配置&数据库
 create_site_info()
+init_db()
 
 # 挂载静态文件
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
