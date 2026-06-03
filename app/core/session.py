@@ -1,55 +1,87 @@
 # app/core/session.py
+import threading
 import uuid
 import time
-from typing import Dict
-from app.config import SESSION_MAX_AGE
+import sqlite3
+from app.core.db import get_session_conn
+from app.config import SESSION_MAX_AGE, SESSION_CLEANUP_AGE
 
-# 内存 Session 字典
-# 格式：{ session_id: { "user": "...", "expire": 时间 } }
-SESSIONS: Dict[str, Dict] = {}
-# sid
-USER_ACTIVE_SESSION: Dict[str, str] = {}
 
-# 创建 Session
-def create_session(user: str = "admin") -> str:
-    session_id = str(uuid.uuid4())
+def create_session(user: str = "admin") -> str | None:
+    """
+        创建新会话，自动踢掉该用户的所有旧会话
+        """
+    sid = str(uuid.uuid4())
+    expire = time.time() + SESSION_MAX_AGE
+    conn = get_session_conn()
+    cur = conn.cursor()
+    try:
+        # 踢掉同用户的旧会话
+        cur.execute("DELETE FROM admin_session WHERE username = ?", (user,))
+        # 插入新会话
+        cur.execute(
+            "INSERT INTO admin_session(sid, username, expire_ts) VALUES (?, ?, ?)",
+            (sid, user, expire)
+        )
+        conn.commit()
+        return sid
+    except sqlite3.Error as e:
+        print(f"Session creation failed: {e}")
+        return None
 
-    # 同用户已有在线会话 → 删掉旧会话
-    if user in USER_ACTIVE_SESSION:
-        old_sid = USER_ACTIVE_SESSION[user]
-        if old_sid in SESSIONS:
-            del SESSIONS[old_sid]
+def verify_session(session_id: str) -> str | None:
+    """
+        验证 session_id 是否有效且未过期。
+        返回用户名（如有效），否则返回 None。
+        """
+    if not session_id:
+        return None
+    now = time.time()
+    conn = get_session_conn()
+    cur = conn.cursor()
+    cur.execute(
+        "SELECT username FROM admin_session WHERE sid = ? AND expire_ts > ?",
+        (session_id, now)
+    )
+    row = cur.fetchone()
+    return row["username"] if row else None
 
-    SESSIONS[session_id] = {
-        "user": user,
-        "expire": time.time() + SESSION_MAX_AGE
-    }
-    # 绑定用户最新sid
-    USER_ACTIVE_SESSION[user] = session_id
-    return session_id
 
-# 校验 Session 是否有效
-def verify_session(session_id: str) -> bool:
-    if session_id not in SESSIONS:
-        return False
-
-    data = SESSIONS[session_id]
-    # 删除过期 Session
-    if data["expire"] < time.time():
-        del SESSIONS[session_id]
-        # 同步清用户绑定
-        u = data["user"]
-        if USER_ACTIVE_SESSION.get(u) == session_id:
-            USER_ACTIVE_SESSION.pop(u, None)
-        return False
-
-    # 非绑定用户无效
-    if USER_ACTIVE_SESSION.get(data["user"], "") != session_id:
-        return False
-
-    return True
-
-# 删除 Session（登出）
 def delete_session(session_id: str):
-    if session_id in SESSIONS:
-        del SESSIONS[session_id]
+    """
+        删除指定会话（用于登出）
+        """
+    if not session_id:
+        return
+    conn = get_session_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM admin_session WHERE sid = ?", (session_id,))
+    conn.commit()
+
+
+def cleanup_expired_sessions() -> int | None:
+    """
+    清理所有已过期的会话，返回删除数量
+    """
+    now = time.time()
+    conn = get_session_conn()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM admin_session WHERE expire_ts < ?", (now,))
+    deleted = cur.rowcount
+    conn.commit()
+    return deleted
+
+
+def start_cleanup_worker():
+    def worker():
+        while True:
+            try:
+                deleted = cleanup_expired_sessions()
+                if deleted > 0:
+                    print(f"Cleaned {deleted} expired sessions.")
+            except Exception as e:
+                print(f"Session cleanup error: {e}")
+            time.sleep(SESSION_CLEANUP_AGE)
+
+    thread = threading.Thread(target=worker, daemon=True)
+    thread.start()

@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.site import create_site_info
 from app.core.auth import admin_jump, login_jump
+from app.core.session import start_cleanup_worker
 from app.config import (
     ALLOW_ORIGINS,
     ALLOW_CREDENTIALS,
@@ -41,9 +42,10 @@ app.add_middleware(
     allow_headers=ALLOW_HEADERS,
 )
 
-# 初始化配置&数据库
+# 初始化区
 create_site_info()
 init_db()
+start_cleanup_worker()
 
 # 挂载静态文件
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")

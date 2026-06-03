@@ -56,6 +56,7 @@ SESSION_MAX_AGE = 7 * 24 * 60 * 60  # /天
 SESSION_HTTPONLY = True
 SESSION_SAMESITE = "lax"   # 允许部分第三方请求携带 Cookie
 SESSION_SECURE = False     # 启用HTTPS  生产环境需设置为 True
+SESSION_CLEANUP_AGE = 600  # /s 循环清理过期 Session 的间隔
 
 
 # 设备状态过滤配置

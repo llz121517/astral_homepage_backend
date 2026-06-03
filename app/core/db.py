@@ -1,11 +1,19 @@
 # app/core/db.py
 from pathlib import Path
+import threading
 import sqlite3
 
 ROOT = Path(__file__).parent.parent.parent
 DB_DIR = ROOT / "data" / "db"
-DB_PATH = DB_DIR / "site.db"
+# 主页业务库
+SITE_DB_PATH = DB_DIR / "site.db"
 
+# 会话独立库
+SESSION_DB_PATH = DB_DIR / "session.db"
+
+# 连接池
+_session_local = threading.local()
+_site_local = threading.local()
 
 sql_list = [
     # 1. 站点配置
@@ -119,26 +127,48 @@ def init_db():
     """
     # 创建data/db文件夹
     DB_DIR.mkdir(exist_ok=True)
-    # 打开连接，开启外键约束
-    conn = sqlite3.connect(DB_PATH)
-    cur = conn.cursor()
-    # 开启外键
-    cur.execute("PRAGMA foreign_keys = ON;")
+    with sqlite3.connect(SITE_DB_PATH) as site_conn:
+        site_conn.execute("PRAGMA journal_mode=WAL;")
+        site_conn.execute("PRAGMA foreign_keys=ON;")
+        for sql in sql_list:
+            site_conn.executescript(sql)
 
-    # 循环执行所有建表语句
-    for sql in sql_list:
-        cur.executescript(sql)
+    # 初始化独立会话库
+    with sqlite3.connect(SESSION_DB_PATH) as sess_conn:
+        sess_conn.execute("PRAGMA journal_mode=WAL;")
+        sess_conn.executescript("""
+            CREATE TABLE IF NOT EXISTS admin_session(
+                sid TEXT PRIMARY KEY,
+                username TEXT NOT NULL,
+                expire_ts REAL NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_session_expire ON admin_session(expire_ts);
+            CREATE INDEX IF NOT EXISTS idx_session_user ON admin_session(username);
+        """)
 
-    conn.commit()
-    conn.close()
+
+def get_site_conn() -> sqlite3.Connection:
+    if not hasattr(_site_local, "conn"):
+        conn = sqlite3.connect(
+            str(SITE_DB_PATH),
+            check_same_thread=True,
+            timeout=10.0
+        )
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA foreign_keys=ON;")
+        _site_local.conn = conn
+    return _site_local.conn
 
 
-def get_conn() -> sqlite3.Connection:
-    """
-    获取数据库连接
-    """
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA foreign_keys=ON")
-    return conn
+def get_session_conn() -> sqlite3.Connection:
+    if not hasattr(_session_local, "conn"):
+        conn = sqlite3.connect(
+            str(SESSION_DB_PATH),
+            check_same_thread=True,
+            timeout=10.0
+        )
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL;")
+        _session_local.conn = conn
+    return _session_local.conn
