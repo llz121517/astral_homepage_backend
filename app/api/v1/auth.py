@@ -1,6 +1,6 @@
 # app/api/v1/auth.py
-from fastapi import APIRouter, Request, Response, Form, HTTPException
-from app.core.session import create_session, delete_session
+from fastapi import APIRouter, Request, Response, Form
+from app.core.session import create_session, delete_session, verify_session
 from app.config import (
     SESSION_COOKIE_KEY,
     SESSION_MAX_AGE,
@@ -22,7 +22,7 @@ async def login(
     password: str = Form(...)
 ):
     if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
-        return {"code":2,"msg":"用户名或密码错误"}
+        return {"code":0,"msg":"用户名或密码错误"}
 
     # 创建内存 session
     session_id = create_session(user=username)
@@ -45,4 +45,12 @@ async def logout(request: Request, response: Response):
     if session_id:
         delete_session(session_id)
     response.delete_cookie(key="session_id")
-    return {"msg": "已登出"}
+    return {"code":1,"msg": "已登出"}
+
+@router.get("/check")
+async def check_login_status(request: Request):
+    session_id = request.cookies.get("session_id")
+    if session_id and verify_session(session_id):
+        return {"code": 1, "msg": "已登录"}
+    else:
+        return {"code": 0, "msg": "未登录"}
