@@ -1,14 +1,15 @@
 # app/api/v1/auth.py
-from fastapi import APIRouter, Request, Response, Form
+from fastapi import APIRouter, Request, Response, Form, Depends
+from app.core.auth import admin_required
+from app.core.crypto import sha256_digest
 from app.core.session import create_session, delete_session, verify_session
+from app.core.db_op import get_admin_account, modify_credential
 from app.config import (
     SESSION_COOKIE_KEY,
     SESSION_MAX_AGE,
     SESSION_HTTPONLY,
     SESSION_SAMESITE,
-    SESSION_SECURE,
-    ADMIN_USERNAME,
-    ADMIN_PASSWORD
+    SESSION_SECURE
 )
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
@@ -21,7 +22,9 @@ async def login(
     username: str = Form(...),
     password: str = Form(...)
 ):
-    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
+    cfg = get_admin_account()
+    pwd = sha256_digest(password)
+    if username != cfg["user"] or pwd != cfg["pwd"]:
         return {"code":0,"msg":"用户名或密码错误"}
 
     # 创建内存 session
@@ -54,3 +57,21 @@ async def check_login_status(request: Request):
         return {"code": 1, "msg": "已登录"}
     else:
         return {"code": 0, "msg": "未登录"}
+
+
+@router.post("/update_credential", dependencies=[Depends(admin_required)])
+async def update_credential(
+    old_pwd: str | None = Form(None),
+    new_username: str | None = Form(None),
+    new_pwd: str | None = Form(None)
+):
+    cfg = get_admin_account()
+    """
+    if sha256_digest(old_pwd) != cfg["pwd"]:
+        return {"code":0,"msg":"原密码不正确"}"""
+    try:
+        modify_credential(new_username, new_pwd)
+        return {"code":1,"msg":"账号/密码修改成功"}
+    except ValueError as e:
+        print(e)
+        return {"code":0,"msg":"用户名不能为纯空格"}

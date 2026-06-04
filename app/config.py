@@ -12,11 +12,12 @@ ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 # 启动时验证必要的环境变量
 if not ASTRAL_AES_KEY:
     raise RuntimeError("环境变量 ASTRAL_AES_KEY 未设置，请在 .env 文件中配置")
+""" # 已迁移入数据库 此次字段仅做初次初始化 一次性用途 故不在此次校验
 if not ADMIN_USERNAME:
     raise RuntimeError("环境变量 ADMIN_USERNAME 未设置，请在 .env 文件中配置")
 if not ADMIN_PASSWORD:
     raise RuntimeError("环境变量 ADMIN_PASSWORD 未设置，请在 .env 文件中配置")
-
+"""
 
 # 服务启动配置
 SERVER_HOST = "0.0.0.0"

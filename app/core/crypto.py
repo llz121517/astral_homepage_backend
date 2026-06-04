@@ -1,6 +1,11 @@
 # app/core/crypto.py
+"""
+密码学相关工具模块
+包含：AES 加密解密、SHA256 哈希等
+"""
 import base64
 import json
+import hashlib
 from typing import Dict, Any
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
@@ -39,3 +44,13 @@ def decrypt_aes_cbc_payload(encrypted_b64: str) -> Dict[str, Any]:
 
     except (ValueError, KeyError, UnicodeDecodeError, json.JSONDecodeError) as e:
         raise ValueError(f"解密失败: {e}")
+
+
+def sha256_digest(plain: str) -> str:
+    """
+    使用 SHA256 生成摘要
+
+    :param plain: 待摘要的原始字符串
+    :return: plain 的 64 个十六进制摘要字符
+    """
+    return hashlib.sha256(plain.encode("utf-8")).hexdigest()

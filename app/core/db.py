@@ -1,7 +1,12 @@
 # app/core/db.py
-from pathlib import Path
 import threading
 import sqlite3
+from pathlib import Path
+from .crypto import sha256_digest
+from app.config import (
+    ADMIN_USERNAME,
+    ADMIN_PASSWORD
+)
 
 ROOT = Path(__file__).parent.parent.parent
 DB_DIR = ROOT / "data" / "db"
@@ -40,8 +45,8 @@ sql_list = [
         switch_skill      INTEGER NOT NULL DEFAULT 0,
         switch_tcs        INTEGER NOT NULL DEFAULT 0,
         active_theme_id INTEGER NOT NULL DEFAULT 1,
-        user            TEXT NOT NULL DEFAULT 'admin',
-        pwd             TEXT NOT NULL DEFAULT '',
+        user            TEXT NOT NULL,
+        pwd             TEXT NOT NULL,
         updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """,
@@ -104,19 +109,36 @@ sql_list = [
 ]
 
 
-def init_db():
+def init_db() -> None:
     """
-    初始化数据库，建文件夹+建表
+    初始化数据库，建文件夹+建表+插入初始管理员凭证（仅当 site_config 为空时）
     """
-    # 创建data/db文件夹
+    # 创建 data/db 文件夹
     DB_DIR.mkdir(exist_ok=True)
+
+    # 初始化 site.db（主页业务库）
     with sqlite3.connect(SITE_DB_PATH) as site_conn:
         site_conn.execute("PRAGMA journal_mode=WAL;")
         site_conn.execute("PRAGMA foreign_keys=ON;")
+
+        # 执行所有建表语句
         for sql in sql_list:
             site_conn.executescript(sql)
 
-    # 初始化独立会话库
+        # 仅当 site_config 无记录时，插入初始管理员账号
+        cur = site_conn.execute("SELECT COUNT(*) FROM site_config")
+        if cur.fetchone()[0] == 0:
+            if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+                raise ValueError("ADMIN_USERNAME or ADMIN_PASSWORD is empty! Please set it in config.")
+            hashed_pwd = sha256_digest(ADMIN_PASSWORD)
+            site_conn.execute(
+                "INSERT INTO site_config (user, pwd) VALUES (?, ?)",
+                (ADMIN_USERNAME, hashed_pwd)
+            )
+            print("Temporary credential configuration has been imported from .env into the database!")
+            print("SECURITY TIP: You can now remove the temporary credentials from .env!")
+
+    # 初始化独立会话库 session.db
     with sqlite3.connect(SESSION_DB_PATH) as sess_conn:
         sess_conn.execute("PRAGMA journal_mode=WAL;")
         sess_conn.executescript("""
