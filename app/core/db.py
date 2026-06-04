@@ -42,35 +42,18 @@ sql_list = [
         active_theme_id INTEGER NOT NULL DEFAULT 1,
         user            TEXT NOT NULL DEFAULT 'admin',
         pwd             TEXT NOT NULL DEFAULT '',
-        avatar_url      TEXT NOT NULL DEFAULT '/static/user/default-avatar.webp',
-        bio             TEXT NOT NULL DEFAULT '',
-        site_name       TEXT NOT NULL DEFAULT 'Astral',
         updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """,
     # 2. 主题表
     """
     CREATE TABLE IF NOT EXISTS themes (
-        id                   INTEGER PRIMARY KEY AUTOINCREMENT,
-        name                 TEXT NOT NULL DEFAULT '未命名主题',
-        main_bg_color        TEXT NOT NULL DEFAULT '',
-        main_text_color      TEXT NOT NULL DEFAULT '#eeeeee',
-        gradient             TEXT NOT NULL DEFAULT '',
-        purple_text_color    TEXT NOT NULL DEFAULT '#747bff',
-        text_bg_color        TEXT NOT NULL DEFAULT '#00000040',
-        item_bg_color        TEXT NOT NULL DEFAULT '#00000038',
-        item_hover_color     TEXT NOT NULL DEFAULT '#33333338',
-        item_left_title_color TEXT NOT NULL DEFAULT '#ffffff',
-        item_left_text_color TEXT NOT NULL DEFAULT '#ffffff',
-        footer_text_color    TEXT NOT NULL DEFAULT '#ffffff',
-        left_tag_item        TEXT NOT NULL DEFAULT 'rgb(27 42 57 / 20%)',
-        card_filter          TEXT NOT NULL DEFAULT '0px',
-        back_filter          TEXT NOT NULL DEFAULT '39px',
-        back_filter_color    TEXT NOT NULL DEFAULT '#00000030',
-        fill                 TEXT NOT NULL DEFAULT '#ffffff',
-        weight               INTEGER NOT NULL DEFAULT 0,
-        created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL DEFAULT '未命名主题',
+        raw_css TEXT NOT NULL DEFAULT '',
+        weight INTEGER NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     CREATE INDEX IF NOT EXISTS idx_themes_weight ON themes(weight);
     """,
