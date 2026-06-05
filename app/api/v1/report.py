@@ -21,9 +21,9 @@ async def receive_status_report(
         data = decrypt_aes_cbc_payload(encrypted_b64)
 
         # 入库
-        hostname = data["hostname"]
         if "hostname" not in data:
             raise HTTPException(status_code=400, detail="缺少 hostname 字段")
+        hostname = data["hostname"]
         update_device_status(hostname, data)
 
         print("\n>>> 收到设备状态:")
@@ -32,6 +32,8 @@ async def receive_status_report(
 
         return JSONResponse({"status": "ok"})
 
+    except HTTPException:
+        raise
     except ValueError as ve:
         print(f"[ERROR] {ve}")
         raise HTTPException(status_code=400, detail="无效的加密数据或格式错误")
