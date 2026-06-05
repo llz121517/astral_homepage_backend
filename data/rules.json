@@ -1,0 +1,55 @@
+{
+  "rules": [
+    {
+      "conditions": {
+        "description": "PyCharm Community Edition"
+      },
+      "description": "PyCharm Community"
+    },
+    {
+      "conditions": {
+        "windowClass": "WorkerW",
+        "processRealName": "explorer"
+      },
+      "description": "桌面"
+    },
+    {
+      "conditions": {
+        "windowClass": "Shell_TrayWnd",
+        "processRealName": "explorer"
+      },
+      "description": "任务栏"
+    },
+    {
+      "conditions": {
+        "windowClass": "Chrome_WidgetWin_1",
+        "description": "Microsoft Edge"
+      },
+      "description": "Microsoft Edge"
+    },
+    {
+      "conditions": {
+        "windowTitle": {
+          "contains": "记事本"
+        }
+      },
+      "description": "记事本"
+    },
+    {
+      "conditions": {
+        "processRealName": {
+          "in": ["cmd", "powershell"]
+        }
+      },
+      "description": "终端"
+    },
+    {
+      "conditions": {
+        "processRealName": {
+          "regex": "^python.*\\.exe$"
+        }
+      },
+      "description": "Python程序"
+    }
+  ]
+}

@@ -124,7 +124,7 @@ cache_sql_list = ["""
     """
     CREATE TABLE IF NOT EXISTS device_status (
         device_id TEXT PRIMARY KEY,
-        status_json TEXT NOT NULL,
+        status TEXT NOT NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
     """

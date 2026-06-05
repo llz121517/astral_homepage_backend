@@ -1,40 +1,22 @@
 # app/core/state.py
+import json
 import re
+from pathlib import Path
 from typing import Any, Dict, Optional
 from app.config import DEFAULT_DESCRIPTION
 
-# 全局存储最近设备状态
-latest_device_status = {}
+# 规则配置路径
+RULES_JSON_PATH = Path(__file__).parent.parent.parent / "data" / "rules.json"
+
+def load_mapping_rules() -> list[dict]:
+    """从json加载匹配规则"""
+    with open(RULES_JSON_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data.get("rules", [])
 
 # 映射规则列表
-MAPPING_RULES = [
-    {
-        "conditions": {"description": "PyCharm Community Edition"},
-        "description": "PyCharm Community"
-    },
-    {
-        "conditions": {
-            "windowClass": "WorkerW",
-            "processRealName": "explorer"
-        },
-        "description": "桌面"
-    },
-    {
-        "conditions": {
-            "windowClass": "Shell_TrayWnd",
-            "processRealName": "explorer"
-        },
-        "description": "任务栏"
-    },
-    {
-        "conditions": {
-            "windowClass": "Chrome_WidgetWin_1",
-            "description": "Microsoft Edge"
-        },
-        "description": "Microsoft Edge"
-    },
-    # 可继续添加更多规则...
-]
+MAPPING_RULES = load_mapping_rules()
+
 """
 | 写法 | 含义 |
 |------|------|
@@ -78,7 +60,7 @@ def _matches_condition(value: Any, condition: Any) -> bool:
         return value == condition
 
 
-async def map_device_status(
+def map_device_status(
         latest_device_status: Dict[str, Any],
         default_description: str = DEFAULT_DESCRIPTION
 ) -> Optional[Dict[str, Any]]:

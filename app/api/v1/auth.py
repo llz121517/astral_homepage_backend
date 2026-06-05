@@ -3,7 +3,7 @@ from fastapi import APIRouter, Request, Response, Form, Depends
 from app.core.auth import admin_required
 from app.core.crypto import sha256_digest
 from app.core.session import create_session, delete_session, verify_session
-from app.core.db.db_op import get_admin_account, modify_credential
+from app.core.db.db_op import get_account, modify_credential
 from app.config import (
     SESSION_COOKIE_KEY,
     SESSION_MAX_AGE,
@@ -22,7 +22,7 @@ async def login(
     username: str = Form(...),
     password: str = Form(...)
 ):
-    cfg = get_admin_account()
+    cfg = get_account()
     pwd = sha256_digest(password)
     if username != cfg["user"] or pwd != cfg["pwd_hash"]:
         return {"code":0,"msg":"用户名或密码错误"}
@@ -65,8 +65,8 @@ async def update_credential(
     new_username: str | None = Form(None),
     new_pwd: str | None = Form(None)
 ):
-    cfg = get_admin_account()
     """
+    cfg = get_account()
     if sha256_digest(old_pwd) != cfg["pwd_hash"]:
         return {"code":0,"msg":"原密码不正确"}"""
     try:

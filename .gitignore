@@ -3,4 +3,5 @@
 /.idea/
 /status_test_server.py
 /frontend/.vscode/
-/data/
+/data/db/
+/data/site.json
