@@ -17,7 +17,7 @@ from app.config import (
 from app.api.v1.report import router as report_router
 from app.api.v1.status.device import router as device_status_router
 from app.api.v1.site.info import router as site_info_router
-from app.core.db import init_db
+from app.core.db.init_db import init_db
 from app.api.v1.auth import router as auth_router
 from app.config import (
     TITLE, VERSION, DESCRIPTION,
@@ -43,8 +43,8 @@ app.add_middleware(
 )
 
 # 初始化区
-create_site_info()
 init_db()
+create_site_info()
 start_cleanup_worker()
 
 # 挂载静态文件
