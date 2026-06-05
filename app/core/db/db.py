@@ -11,11 +11,11 @@ DB_DIR = ROOT / "data" / "db"
 # 主页业务库
 SITE_DB_PATH = DB_DIR / "site.db"
 
-# 会话独立库
-SESSION_DB_PATH = DB_DIR / "session.db"
+# 多 work 共享缓存库
+CACHE_DB_PATH = DB_DIR / "cache.db"
 
 # 连接池
-_session_local = threading.local()
+_cache_local = threading.local()
 _site_local = threading.local()
 
 
@@ -33,14 +33,14 @@ def get_site_conn() -> sqlite3.Connection:
     return _site_local.conn
 
 
-def get_session_conn() -> sqlite3.Connection:
-    if not hasattr(_session_local, "conn"):
+def get_cache_conn() -> sqlite3.Connection:
+    if not hasattr(_cache_local, "conn"):
         conn = sqlite3.connect(
-            str(SESSION_DB_PATH),
+            str(CACHE_DB_PATH),
             check_same_thread=True,
             timeout=10.0
         )
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=WAL;")
-        _session_local.conn = conn
-    return _session_local.conn
+        _cache_local.conn = conn
+    return _cache_local.conn

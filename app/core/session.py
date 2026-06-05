@@ -3,7 +3,7 @@ import threading
 import uuid
 import time
 import sqlite3
-from app.core.db.db import get_session_conn
+from app.core.db.db import get_cache_conn
 from app.config import SESSION_MAX_AGE, SESSION_CLEANUP_AGE
 
 
@@ -13,7 +13,7 @@ def create_session(user: str) -> str | None:
     """
     sid = str(uuid.uuid4())
     expire = time.time() + SESSION_MAX_AGE
-    conn = get_session_conn()
+    conn = get_cache_conn()
     cur = conn.cursor()
     try:
         # 踢掉同用户的旧会话
@@ -37,7 +37,7 @@ def verify_session(session_id: str) -> str | None:
     if not session_id:
         return None
     now = time.time()
-    conn = get_session_conn()
+    conn = get_cache_conn()
     cur = conn.cursor()
     cur.execute(
         "SELECT username FROM sessions WHERE sid = ? AND expire_ts > ?",
@@ -53,7 +53,7 @@ def delete_session(session_id: str):
     """
     if not session_id:
         return
-    conn = get_session_conn()
+    conn = get_cache_conn()
     cur = conn.cursor()
     cur.execute("DELETE FROM sessions WHERE sid = ?", (session_id,))
     conn.commit()
@@ -64,7 +64,7 @@ def cleanup_expired_sessions() -> int | None:
     清理所有已过期的会话，返回删除数量
     """
     now = time.time()
-    conn = get_session_conn()
+    conn = get_cache_conn()
     cur = conn.cursor()
     cur.execute("DELETE FROM sessions WHERE expire_ts < ?", (now,))
     deleted = cur.rowcount

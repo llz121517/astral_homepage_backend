@@ -1,5 +1,4 @@
 # app/core/init_db.py
-import threading
 import sqlite3
 from pathlib import Path
 from app.core.crypto import sha256_digest
@@ -13,11 +12,11 @@ DB_DIR = ROOT / "data" / "db"
 # 主页业务库
 SITE_DB_PATH = DB_DIR / "site.db"
 
-# 会话独立库
-SESSION_DB_PATH = DB_DIR / "session.db"
+# 缓存库
+CACHE_DB_PATH = DB_DIR / "cache.db"
 
 
-sql_list = [
+site_sql_list = [
     # 1. 站点配置
     """
     CREATE TABLE IF NOT EXISTS site_config (
@@ -113,6 +112,24 @@ sql_list = [
     """
 ]
 
+cache_sql_list = ["""
+    CREATE TABLE IF NOT EXISTS sessions(
+        sid TEXT PRIMARY KEY,
+        username TEXT NOT NULL,
+        expire_ts REAL NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_session_expire ON sessions(expire_ts);
+    CREATE INDEX IF NOT EXISTS idx_session_user ON sessions(username);
+    """,
+    """
+    CREATE TABLE IF NOT EXISTS device_status (
+        device_id TEXT PRIMARY KEY,
+        status_json TEXT NOT NULL,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+    """
+]
+
 
 def init_db() -> None:
     """
@@ -127,10 +144,15 @@ def init_db() -> None:
         site_conn.execute("PRAGMA foreign_keys=ON;")
 
         # 执行所有建表语句
-        for sql in sql_list:
+        for sql in site_sql_list:
             site_conn.executescript(sql)
 
-        # 仅当 site_config 无记录时，插入初始管理员账号
+        # 当 site_config 为空时，插入默认数据
+        cur = site_conn.execute("SELECT 1 FROM site_config WHERE id = 1")
+        if cur.fetchone() is None:
+            site_conn.execute("INSERT INTO site_config DEFAULT VALUES;")
+
+        # 仅当 users 无记录时，插入初始管理员账号
         cur = site_conn.execute("SELECT COUNT(*) FROM users")
         if cur.fetchone()[0] == 0:
             if not ADMIN_USERNAME or not ADMIN_PASSWORD:
@@ -143,15 +165,8 @@ def init_db() -> None:
             print("Temporary credential configuration has been imported from .env into the database!")
             print("SECURITY TIP: You can now remove the temporary credentials from .env!")
 
-    # 初始化独立会话库 session.db
-    with sqlite3.connect(SESSION_DB_PATH) as sess_conn:
-        sess_conn.execute("PRAGMA journal_mode=WAL;")
-        sess_conn.executescript("""
-            CREATE TABLE IF NOT EXISTS sessions(
-                sid TEXT PRIMARY KEY,
-                username TEXT NOT NULL,
-                expire_ts REAL NOT NULL
-            );
-            CREATE INDEX IF NOT EXISTS idx_session_expire ON sessions(expire_ts);
-            CREATE INDEX IF NOT EXISTS idx_session_user ON sessions(username);
-        """)
+    # 初始化多 work 共享缓存库
+    with sqlite3.connect(CACHE_DB_PATH) as cache_conn:
+        cache_conn.execute("PRAGMA journal_mode=WAL;")
+        for sql in cache_sql_list:
+            cache_conn.executescript(sql)
