@@ -10,4 +10,4 @@ async def get_site_info():
     """
     返回站点基础信息
     """
-    return get_site_config()
+    return {"code": 1, "msg": "success", "data": get_site_config()}
