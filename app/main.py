@@ -5,26 +5,24 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
-from app.core.site import create_site_info
 from app.core.auth import admin_jump, login_jump
 from app.core.session import start_cleanup_worker
+from app.core.db.init_db import init_db
 from app.config import (
     ALLOW_ORIGINS,
     ALLOW_CREDENTIALS,
     ALLOW_METHODS,
     ALLOW_HEADERS,
+    TITLE, VERSION, DESCRIPTION,
+    DEBUG, DOCS_URL, REDOC_URL, OPENAPI_URL
 )
 
 # 导入 API 路由
 from app.api.v1.report import router as report_router
 from app.api.v1.status.device import router as device_status_router
 from app.api.v1.site.info import router as site_info_router
-from app.core.db.init_db import init_db
 from app.api.v1.auth import router as auth_router
-from app.config import (
-    TITLE, VERSION, DESCRIPTION,
-    DEBUG, DOCS_URL, REDOC_URL, OPENAPI_URL
-)
+from app.api.v1.site.theme import router as site_theme_router
 
 app = FastAPI(
     title=TITLE,
@@ -46,7 +44,6 @@ app.add_middleware(
 
 # 初始化区
 init_db()
-create_site_info()
 start_cleanup_worker()
 
 # 中间件
@@ -64,6 +61,7 @@ app.include_router(report_router)
 app.include_router(device_status_router)
 app.include_router(site_info_router)
 app.include_router(auth_router)
+app.include_router(site_theme_router)
 
 
 @app.get("/", tags=["page"])

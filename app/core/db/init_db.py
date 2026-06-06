@@ -1,4 +1,5 @@
 # app/core/init_db.py
+import json
 import sqlite3
 from pathlib import Path
 from app.core.crypto import sha256_digest
@@ -28,7 +29,8 @@ site_sql_list = [
         footer        TEXT NOT NULL DEFAULT '',
         beian         TEXT NOT NULL DEFAULT '',
         ico           TEXT NOT NULL DEFAULT '/static/img/favicon.ico',
-        avatar_url          TEXT NOT NULL DEFAULT '/static/img/logo.png',
+        avatar_url    TEXT NOT NULL DEFAULT '/static/img/avatar.png',
+        avatar_kuang  TEXT NOT NULL DEFAULT '/static/img/avatarkuang.png',
         maxwidth      INTEGER NOT NULL DEFAULT 1100,
         title1        TEXT NOT NULL DEFAULT "Hello I' m",
         title2        TEXT NOT NULL DEFAULT 'Zyyo',
@@ -130,6 +132,26 @@ cache_sql_list = ["""
     """
 ]
 
+raw_css = """html {
+    /*图片模糊背景＋黑色透明卡片+白色svg**/
+    --name: 主题5;
+    --main_bg_color: url(/static/img/background.jpg);
+    --main_text_color: #eeeeee;
+    --gradient: linear-gradient(120deg, #bd34fe, #e0321b 30%, #41d1ff 60%);
+    --purple_text_color: #747bff;
+    --text_bg_color: #00000040;
+    --item_bg_color: #00000038;
+    --item_hover_color: #33333338;
+    --item_left_title_color: #ffffff;
+    --item_left_text_color: #ffffff;
+    --footer_text_color: #ffffff;
+    --left_tag_item: rgb(27 42 57 / 20%);
+    --card_filter: 0px;
+    --back_filter: 19px;
+    --back_filter_color: #00000030;
+    --fill:#ffffff;
+}""",
+
 
 def init_db() -> None:
     """
@@ -151,6 +173,10 @@ def init_db() -> None:
         cur = site_conn.execute("SELECT 1 FROM site_config WHERE id = 1")
         if cur.fetchone() is None:
             site_conn.execute("INSERT INTO site_config DEFAULT VALUES;")
+
+        cur = site_conn.execute("SELECT 1 FROM themes WHERE id = 1")
+        if cur.fetchone() is None:
+            site_conn.execute("INSERT INTO themes (raw_css) VALUES (?);", raw_css)
 
         # 仅当 users 无记录时，插入初始管理员账号
         cur = site_conn.execute("SELECT COUNT(*) FROM users")

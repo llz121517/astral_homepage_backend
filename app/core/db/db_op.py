@@ -92,3 +92,39 @@ def get_device_status() -> dict:
         "device_id": row[0],
         "status": json.loads(row[1])
     }
+
+
+def get_site_config() -> dict:
+    """
+    读取 site_config 表中的配置项
+
+    :return: 包含所有 site_config 字段值的字典
+    :raises RuntimeError: 当 site_config 表未初始化时抛出异常
+    """
+    conn = get_site_conn()
+    row = conn.execute("SELECT * FROM site_config LIMIT 1").fetchone()
+    if row is None:
+        raise RuntimeError("Site config not initialized!")
+    return dict(row)
+
+
+def get_theme_by_id(tid: int) -> dict | list | None:
+    """
+    根据id查询themes主题，返回字典/列表/None
+
+    :param tid: 需要查寻的主题 id
+    :return: 当 tid 为 0 时返回包含所有主题的列表 否则返回查询的主题 当数据库无数据时返回 None
+    """
+    conn = get_site_conn()
+    if tid == 0:
+        rows = conn.execute("SELECT * FROM themes ORDER BY weight ASC").fetchall()
+        if not rows:
+            return None
+        return [dict(row) for row in rows]
+    else:
+        row = conn.execute("""
+                SELECT id,name,raw_css,weight FROM themes WHERE id = ?
+            """, (tid,)).fetchone()
+        if row is None:
+            return None
+        return dict(row)
