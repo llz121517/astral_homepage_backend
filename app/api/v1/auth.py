@@ -19,7 +19,7 @@ limiter = Limiter(key_func=get_remote_address)
 rate_limit_exception_handler = _rate_limit_exceeded_handler
 
 
-router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
+router = APIRouter(prefix="/api/v1/auth", tags=["auth", "api_v1"])
 
 
 # 登录

@@ -5,7 +5,7 @@ from app.core.crypto import decrypt_aes_cbc_payload
 from app.core.db.db_op import update_device_status
 
 
-router = APIRouter(prefix="/api/v1", tags=["report", "status"])
+router = APIRouter(prefix="/api/v1", tags=["report", "status", "api_v1"])
 
 
 @router.post("/report")

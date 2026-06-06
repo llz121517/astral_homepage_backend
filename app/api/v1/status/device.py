@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from app.core.db.db_op import get_device_status
 from app.core.state import map_device_status
 
-router = APIRouter(prefix="/api/v1/status", tags=["status"])
+router = APIRouter(prefix="/api/v1/status", tags=["status", "api_v1"])
 
 
 @router.get("/device")

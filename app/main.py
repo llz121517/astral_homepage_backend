@@ -1,5 +1,5 @@
 # app/main.py
-from fastapi import FastAPI, Depends, Request
+from fastapi import FastAPI, Depends, Request, APIRouter
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -66,12 +66,12 @@ app.include_router(site_info_router)
 app.include_router(auth_router)
 
 
-@app.get("/")
+@app.get("/", tags=["page"])
 async def index_page():
     # 返回前端入口页面
     return FileResponse("frontend/index.html")
 
-@app.get("/admin")
+@app.get("/admin", tags=["page"])
 async def admin_page(
     request: Request,
     redirect_resp: RedirectResponse = Depends(admin_jump)
@@ -81,7 +81,7 @@ async def admin_page(
     # 返回管理页面
     return FileResponse("frontend/admin/index.html")
 
-@app.get("/login")
+@app.get("/login", tags=["page"])
 async def login_page(request: Request,
     redirect_resp: RedirectResponse = Depends(login_jump)
 ):

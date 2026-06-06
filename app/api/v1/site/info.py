@@ -3,7 +3,7 @@ from app.core import site
 from fastapi import Depends, APIRouter
 from app.core.auth import admin_required
 
-router = APIRouter(prefix="/api/v1/site", tags=["site"])
+router = APIRouter(prefix="/api/v1/site", tags=["site", "api_v1"])
 
 
 @router.get("/info")
