@@ -3,6 +3,8 @@ from fastapi import FastAPI, Depends, Request
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from app.core.site import create_site_info
 from app.core.auth import admin_jump, login_jump
 from app.core.session import start_cleanup_worker
@@ -46,6 +48,13 @@ app.add_middleware(
 init_db()
 create_site_info()
 start_cleanup_worker()
+
+# 中间件
+
+# 异常捕获处理器
+async def custom_429(request, exc):
+    return JSONResponse(status_code=429,content={"code":0,"msg":"操作频繁，请15分钟后重试"})
+app.add_exception_handler(RateLimitExceeded, custom_429)
 
 # 挂载静态文件
 app.mount("/static", StaticFiles(directory="frontend/static"), name="static")

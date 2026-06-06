@@ -12,12 +12,21 @@ from app.config import (
     SESSION_SECURE
 )
 
+from slowapi import Limiter,_rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
+rate_limit_exception_handler = _rate_limit_exceeded_handler
+
+
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 
 # 登录
 @router.post("/login")
+@limiter.limit("5/15minute")
 async def login(
+    request: Request,
     response: Response,
     username: str = Form(...),
     password: str = Form(...)
@@ -27,7 +36,7 @@ async def login(
     if username != cfg["user"] or pwd != cfg["pwd_hash"]:
         return {"code":0,"msg":"用户名或密码错误"}
 
-    # 创建内存 session
+    # 创建 session
     session_id = create_session(user=username)
 
     # 设置 HTTP-only Cookie
