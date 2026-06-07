@@ -132,6 +132,57 @@ cache_sql_list = ["""
     """
 ]
 
+triggers = [
+    """
+    CREATE TRIGGER IF NOT EXISTS trg_site_config_upd
+    AFTER UPDATE ON site_config
+    WHEN OLD.updated_at IS NULL OR NEW.updated_at IS NULL OR OLD.updated_at = NEW.updated_at
+    BEGIN
+        UPDATE site_config SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS trg_users_upd
+    AFTER UPDATE ON users
+    WHEN OLD.updated_at IS NULL OR NEW.updated_at IS NULL OR OLD.updated_at = NEW.updated_at
+    BEGIN
+        UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS trg_themes_upd
+    AFTER UPDATE ON themes
+    WHEN OLD.updated_at IS NULL OR NEW.updated_at IS NULL OR OLD.updated_at = NEW.updated_at
+    BEGIN
+        UPDATE themes SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS trg_projects_upd
+    AFTER UPDATE ON projects
+    WHEN OLD.updated_at IS NULL OR NEW.updated_at IS NULL OR OLD.updated_at = NEW.updated_at
+    BEGIN
+        UPDATE projects SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS trg_items_upd
+    AFTER UPDATE ON items
+    WHEN OLD.updated_at IS NULL OR NEW.updated_at IS NULL OR OLD.updated_at = NEW.updated_at
+    BEGIN
+        UPDATE items SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS trg_icons_upd
+    AFTER UPDATE ON icons
+    WHEN OLD.updated_at IS NULL OR NEW.updated_at IS NULL OR OLD.updated_at = NEW.updated_at
+    BEGIN
+        UPDATE icons SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
+    END;
+    """,
+]
+
 raw_css = """html {
     /*图片模糊背景＋黑色透明卡片+白色svg**/
     --name: 主题5;
@@ -167,6 +218,9 @@ def init_db() -> None:
 
         # 执行所有建表语句
         for sql in site_sql_list:
+            site_conn.executescript(sql)
+        # 创建触发器
+        for sql in triggers:
             site_conn.executescript(sql)
 
         # 当 site_config 为空时，插入默认数据

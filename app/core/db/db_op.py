@@ -128,3 +128,37 @@ def get_theme_by_id(tid: int) -> dict | list | None:
         if row is None:
             return None
         return dict(row)
+
+
+def update_site_config(update_data: dict) -> bool:
+    """
+    动态更新 site_config 表 (只更新传入的非 None 字段)
+    """
+    if not update_data:
+        return False
+
+    # 需要序列化为 JSON 字符串存储的字段
+    json_fields = {'tags', 'timeline', 'descriptions', 'side_info'}
+
+    set_clauses = []
+    values = []
+
+    for key, value in update_data.items():
+        if value is not None:  # 只更新前端明确传来的字段
+            # 如果是列表/字典，自动转为 JSON 字符串
+            if key in json_fields and isinstance(value, (list, dict)):
+                value = json.dumps(value, ensure_ascii=False)
+
+            set_clauses.append(f"{key} = ?")
+            values.append(value)
+
+    if not set_clauses:
+        return False
+
+    # 拼接 SQL: UPDATE site_config SET a=?, b=? WHERE id = 1
+    sql = f"UPDATE site_config SET {', '.join(set_clauses)} WHERE id = 1"
+
+    conn = get_site_conn()
+    cursor = conn.execute(sql, values)
+    conn.commit()
+    return cursor.rowcount > 0
