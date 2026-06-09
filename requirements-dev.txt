@@ -5,4 +5,5 @@ python-dotenv~=1.2.2
 starlette~=1.0.0
 pytest
 pytest-asyncio
-slowapi
+slowapi~=0.1.9
+pydantic~=2.13.3
