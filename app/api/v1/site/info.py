@@ -1,8 +1,9 @@
 # app/api/v1/site/info.py
 import json
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.core.db.db_op import get_site_config
 from app.core.db.db_op import update_site_config
+from app.core.auth import admin_required
 from pydantic import BaseModel, field_validator
 from typing import Optional, List, Dict, Any
 
@@ -62,7 +63,7 @@ async def get_site_info():
     return {"code": 1, "msg": "success", "data": data}
 
 
-@router.put("/info")
+@router.put("/info", dependencies=[Depends(admin_required)])
 async def update_site_info(update_data: SiteConfigUpdate):
     """
     更新站点基础信息

@@ -68,7 +68,7 @@ async def check_login_status(request: Request):
         return {"code": 0, "msg": "未登录"}
 
 
-@router.post("/update_credential", dependencies=[Depends(admin_required)])
+@router.put("/update", dependencies=[Depends(admin_required)])
 async def update_credential(
     old_pwd: str | None = Form(None),
     new_username: str | None = Form(None),
