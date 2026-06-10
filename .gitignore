@@ -2,7 +2,6 @@
 /.env
 /.vscode/
 /.idea/
-/status_test_server.py
 /frontend/.vscode/
 /data/db/
 /frontend/
