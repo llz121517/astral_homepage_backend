@@ -47,8 +47,8 @@ SCENARIOS.append({
         {"title": "完成重构", "date": "2025-06-01"},
     ],
     "descriptions": [
-        {"title": "全栈开发者"},
-        {"title": "热爱开源"},
+        {"title": "[全栈开发者]"},
+        {"title": "热爱{开源}"},
     ],
     "side_info": [
         {"title": "年龄:", "content": "24"},
@@ -58,7 +58,7 @@ SCENARIOS.append({
     "switch_leftcard": 1,
     "switch_skill": 1,
     "switch_tcs": 1,
-    "active_theme_id": 1,
+    "active_theme_id": 2,
     "copyright_year": "2024",
     "copyright_name": "Zyyo",
     "icp_number": "京ICP备2024xxxxxx号",

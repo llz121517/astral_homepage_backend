@@ -1,5 +1,6 @@
 # app/main.py
 from fastapi import FastAPI, Depends, Request, APIRouter
+from fastapi import Response
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -76,8 +77,10 @@ async def admin_page(
 ):
     if redirect_resp:
         return redirect_resp
-    # 返回管理页面
-    return FileResponse("frontend/admin/index.html")
+
+    response = FileResponse("frontend/admin/index.html")
+    response.headers["Cache-Control"] = "no-store, private"
+    return response
 
 @app.get("/login", tags=["page"])
 async def login_page(request: Request,
