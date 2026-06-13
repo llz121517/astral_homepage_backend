@@ -45,6 +45,9 @@ SCENARIOS.append({
     "timeline": [
         {"title": "项目启动", "date": "2025-01-15"},
         {"title": "完成重构", "date": "2025-06-01"},
+        {"title": "Test", "date": "2025-01-15"},
+        {"title": "Test", "date": "2025-06-01"},
+        {"title": "Test", "date": "2025-01-15"},
     ],
     "descriptions": [
         {"title": "[全栈开发者]"},
