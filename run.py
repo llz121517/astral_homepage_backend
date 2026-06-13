@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # /run.py
 import os
 import uvicorn
@@ -12,21 +12,6 @@ from app.config import (
 )
 
 if __name__ == "__main__":
-    """
-    cmd = ("uvicorn app.main:app"
-           f" --host {SERVER_HOST}"
-           f" --port {SERVER_PORT}"
-           f" --workers {WORKERS}"
-           f" --log-level {LOG_LEVEL}"
-    )
-
-    if RELOAD:
-        cmd += " --reload"
-        cmd += " --reload-dir app --reload-dir frontend"
-        cmd += " --reload-delay 0"
-
-    os.system(cmd)
-    """
     uvicorn.run(
         app="app.main:app",
         host=SERVER_HOST,

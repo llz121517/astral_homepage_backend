@@ -135,7 +135,7 @@ def update_site_config(update_data: dict) -> bool:
     动态更新 site_config 表，只更新传入的非 None 字段。
 
     注意：调用前必须使用 Pydantic 模型对 update_data 做白名单校验，
-    防止非法字段名通过 f-string 拼接导致 SQL 注入。d
+    防止非法字段名通过 f-string 拼接导致 SQL 注入。
 
     :param update_data: 需要更新的字段字典，key 为合法列名，value 为对应值；
                         值为 None 的字段会被跳过，不做更新
