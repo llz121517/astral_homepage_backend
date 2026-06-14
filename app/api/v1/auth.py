@@ -31,6 +31,7 @@ async def login(
     username: str = Form(...),
     password: str = Form(...)
 ):
+    username = username.strip()
     cfg = get_account()
     pwd = sha256_digest(password)
     if username != cfg["user"] or pwd != cfg["pwd_hash"]:

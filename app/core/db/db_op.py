@@ -26,7 +26,7 @@ def modify_credential(
     new_pwd: str | None = None
 ) -> None:
     """
-    修改管理员凭据，new_pwd 字段以 SHA256 摘要形式入库，自动刷新 updated_at
+    修改管理员凭据，new_pwd 字段以 SHA256 摘要形式入库，new_username 字段将 .strip() 后入库，自动刷新 updated_at
 
     :param new_username: 需要更新的用户名(可选)
     :param new_pwd: 需要更新的密码(可选)
@@ -42,7 +42,7 @@ def modify_credential(
         if not new_username.strip():
             raise ValueError("Username cannot be empty or whitespace")
         update_parts.append("user = ?")
-        params.append(new_username)
+        params.append(new_username.strip())
 
     if new_pwd is not None:
         update_parts.append("pwd_hash = ?")
