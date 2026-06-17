@@ -1,5 +1,4 @@
 # app/core/init_db.py
-import json
 import sqlite3
 from pathlib import Path
 from app.core.crypto import sha256_digest
@@ -240,7 +239,7 @@ def init_db() -> None:
             hashed_pwd = sha256_digest(ADMIN_PASSWORD)
             site_conn.execute(
                 "INSERT INTO users (user, pwd_hash) VALUES (?, ?)",
-                (ADMIN_USERNAME, hashed_pwd)
+                (ADMIN_USERNAME.strip(), hashed_pwd)
             )
             print("Temporary credential configuration has been imported from .env into the database!")
             print("SECURITY TIP: You can now remove the temporary credentials from .env!")
