@@ -1,6 +1,6 @@
 # app/api/v1/auth.py
 from fastapi import APIRouter, Request, Response, Form, Depends
-from app.core.auth import admin_required
+from app.core.auth import admin_required, get_limiter_key
 from app.core.crypto import sha256_digest
 from app.core.session import create_session, delete_session, verify_session
 from app.core.db.db_op import get_account, modify_credential
@@ -12,11 +12,9 @@ from app.config import (
     SESSION_SECURE
 )
 
-from slowapi import Limiter,_rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
+from slowapi import Limiter
 
-limiter = Limiter(key_func=get_remote_address)
-rate_limit_exception_handler = _rate_limit_exceeded_handler
+limiter = Limiter(key_func=get_limiter_key)
 
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth", "api_v1"])
@@ -34,7 +32,12 @@ async def login(
     username = username.strip()
     cfg = get_account()
     pwd = sha256_digest(password)
-    if username != cfg["user"] or pwd != cfg["pwd_hash"]:
+
+    # 固定计算量，防止通过响应时间推断用户名是否存在（时序侧信道攻击）
+    # 无论用户名是否正确，都同时执行两个比对
+    user_match = username == cfg["user"]
+    pass_match = pwd == cfg["pwd_hash"]
+    if not (user_match and pass_match):
         return {"code":0,"msg":"用户名或密码错误"}
 
     # 创建 session

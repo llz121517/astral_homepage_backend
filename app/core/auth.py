@@ -3,6 +3,18 @@ from fastapi import Request, HTTPException
 from .session import verify_session
 from fastapi.responses import RedirectResponse
 
+
+def get_limiter_key(request: Request) -> str:
+    """
+    自定义限流 key：用 TCP 真实连接 IP + User-Agent 前缀组合。
+
+    原因：slowapi 默认的 get_remote_address 只取 request.client.host，
+    若 uvicorn/代理开启了 X-Forwarded-For 信任，攻击者可伪造 IP 绕过限流。
+    """
+    ip = request.client.host if request.client else "unknown"
+    ua_prefix = (request.headers.get("User-Agent", "") or "")[:20]
+    return f"{ip}|{ua_prefix}"
+
 # 页面路由依赖
 async def admin_jump(request: Request):
     session_id = request.cookies.get("session_id")
