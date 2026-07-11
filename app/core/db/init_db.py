@@ -26,7 +26,7 @@ site_sql_list = [
         description   TEXT NOT NULL DEFAULT '',
         header        TEXT NOT NULL DEFAULT '',
         footer        TEXT NOT NULL DEFAULT '',
-        beian         TEXT NOT NULL DEFAULT '',
+        icp_number         TEXT NOT NULL DEFAULT '',
         ico           TEXT NOT NULL DEFAULT '/static/img/favicon.ico',
         avatar_url    TEXT NOT NULL DEFAULT '/static/img/avatar.png',
         avatar_kuang  TEXT NOT NULL DEFAULT '/static/img/avatarkuang.png',
