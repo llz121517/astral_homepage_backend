@@ -81,7 +81,8 @@ async def update_credential(
     """
     cfg = get_account()
     if sha256_digest(old_pwd) != cfg["pwd_hash"]:
-        return {"code":0,"msg":"原密码不正确"}"""
+        return {"code":0,"msg":"原密码不正确"}""" # TODO XXX: 前端尚未适配原密码校验 暂时禁用
+    return {"code":0,"msg":"功能禁用"}
     try:
         modify_credential(new_username, new_pwd)
         return {"code":1,"msg":"账号/密码修改成功"}

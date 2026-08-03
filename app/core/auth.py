@@ -15,16 +15,20 @@ def get_limiter_key(request: Request) -> str:
     ua_prefix = (request.headers.get("User-Agent", "") or "")[:20]
     return f"{ip}|{ua_prefix}"
 
-# 页面路由依赖
+class RedirectToLogin(HTTPException):
+    """自定义异常，携带重定向目标"""
+    def __init__(self, url: str = "/login"):
+        super().__init__(status_code=302, headers={"Location": url})
+
 async def admin_jump(request: Request):
     session_id = request.cookies.get("session_id")
     if not session_id or not verify_session(session_id):
-        return RedirectResponse(url="/login", status_code=302)
+        raise RedirectToLogin("/login")
 
 async def login_jump(request: Request):
     session_id = request.cookies.get("session_id")
     if session_id and verify_session(session_id):
-        return RedirectResponse(url="/admin", status_code=302)
+        raise RedirectToLogin("/admin")
 
 # 受保护接口依赖
 async def admin_required(request: Request):
