@@ -70,18 +70,21 @@ async def update_site_info(update_data: SiteConfigUpdate):
     """
     if update_data.tags:
         update_data.tags = [tag.strip() for tag in update_data.tags]
+
     if update_data.timeline:
         for item in update_data.timeline:
-            item["title"] = item["title"].strip()
-            item["content"] = item["content"].strip()
+            item["date"] = item.get("date", "").strip()
+            item["title"] = item.get("title", "").strip()
+
     if update_data.descriptions:
         for item in update_data.descriptions:
-            item["title"] = item["title"].strip()
-            item["content"] = item["content"].strip()
+            item["title"] = item.get("title", "").strip()
+            item["content"] = item.get("content", "").strip()
+
     if update_data.side_info:
         for item in update_data.side_info:
-            item["title"] = item["title"].strip()
-            item["content"] = item["content"].strip()
+            item["title"] = item.get("title", "").strip()
+            item["content"] = item.get("content", "").strip()
 
     updated = update_site_config(update_data.model_dump(exclude_unset=True))
 
