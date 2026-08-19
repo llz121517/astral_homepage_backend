@@ -69,7 +69,7 @@ async def check_login_status(request: Request):
     if session_id and verify_session(session_id):
         return {"code": 1, "msg": "已登录"}
     else:
-        return {"code": 0, "msg": "未登录"}
+        return {"code": 1, "msg": "未登录"}
 
 
 @router.put("/update", dependencies=[Depends(admin_required)])

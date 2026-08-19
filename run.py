@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # /run.py
-import os
 import uvicorn
 from app.config import (
     SERVER_HOST,

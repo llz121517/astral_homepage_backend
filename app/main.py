@@ -1,6 +1,5 @@
 # app/main.py
-from fastapi import FastAPI, Depends, Request, APIRouter
-from fastapi import Response
+from fastapi import FastAPI, Depends
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware

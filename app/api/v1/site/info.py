@@ -16,7 +16,7 @@ class SiteConfigUpdate(BaseModel):
     icp_number: Optional[str] = None
     ico: Optional[str] = None
     avatar_url: Optional[str] = None
-    avatar_kuang: Optional[str] = None
+    avatar_frame: Optional[str] = None
     maxwidth: Optional[int] = None
     title1: Optional[str] = None
     title2: Optional[str] = None
@@ -32,7 +32,7 @@ class SiteConfigUpdate(BaseModel):
 
     @field_validator(
         'site_title', 'keywords', 'description', 'header', 'footer',
-        'icp_number', 'ico', 'avatar_url', 'avatar_kuang', 'title1', 'title2',
+        'icp_number', 'ico', 'avatar_url', 'avatar_frame', 'title1', 'title2',
         mode='before'
     )
     def null_to_empty_string(cls, v):

@@ -29,7 +29,7 @@ site_sql_list = [
         icp_number         TEXT NOT NULL DEFAULT '',
         ico           TEXT NOT NULL DEFAULT '/static/img/favicon.ico',
         avatar_url    TEXT NOT NULL DEFAULT '/static/img/avatar.png',
-        avatar_kuang  TEXT NOT NULL DEFAULT '/static/img/avatarkuang.png',
+        avatar_frame  TEXT NOT NULL DEFAULT '/static/img/avatarframe.png',
         maxwidth      INTEGER NOT NULL DEFAULT 1100,
         title1        TEXT NOT NULL DEFAULT "Hello I' m",
         title2        TEXT NOT NULL DEFAULT 'Zyyo',
